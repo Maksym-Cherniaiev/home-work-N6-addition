@@ -1,0 +1,19 @@
+.properties-container {
+	width: 80%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.btn {
+	background-color: rgb(152, 175, 246);
+    height: 27px;
+    border: none;
+    outline: none;
+    color: #dae1fc;
+    border-radius: 3px;
+}
+
+.btn:active {
+	background-color: rgb(102, 131, 209);
+}
