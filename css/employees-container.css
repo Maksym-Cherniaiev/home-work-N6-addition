@@ -17,6 +17,7 @@
 .employees-container__list-element {
 	width: 90%;
 	height: 48px;
+	transition: height 0.5s ease-in;
 	background-color: rgb(194, 206, 250);
 	display: flex;
 	justify-content: space-between;
@@ -27,7 +28,6 @@
 
 .employees-container__list-element--active {
 	height: 250px;
-	transition: height 0.5s ease-in;
 }
 
 .list__button {
@@ -51,3 +51,4 @@
 	font-size: 1.3em;
 	margin: 0;
 	line-height: 25px;
+}

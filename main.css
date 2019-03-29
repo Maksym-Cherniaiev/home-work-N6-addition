@@ -1,6 +1,10 @@
 @import "css/properties-container.css";
 @import "css/employees-container.css";
 
+body {
+	margin: 0;
+}
+
 .main-container {
 	font-family: 'News Cycle', sans-serif;
 	display: flex;

@@ -35,7 +35,7 @@ class PrintToPage extends GetData {
 	}
 
 	detailsButtonModifier(event) {
-		console.log(event);
+		console.log(this.arrOfEmployee);
 		if (event.target.classList.contains(this.detailsButtonClass)) {
 			event.target.closest(".employees-container__list-element").classList.toggle("employees-container__list-element--active");
 		}
