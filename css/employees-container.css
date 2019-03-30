@@ -16,7 +16,7 @@
 
 .employees-container__list-element {
 	width: 90%;
-	height: 48px;
+	height: 43px;
 	transition: height 0.5s ease-in;
 	background-color: rgb(194, 206, 250);
 	display: flex;

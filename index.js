@@ -7,7 +7,7 @@ let buttonId = "btn-id_";
 
 class GetData {
 	constructor() {
-		this.URL_SERVER = "http://dummy.restapiexample.com/api/v1/employees";
+		this.URL_SERVER = "https://jsonplaceholder.typicode.com/users";
 		this.arrOfEmployee = [];
 	}
 
@@ -19,7 +19,7 @@ class GetData {
 	}
 }
 
-class PrintToPage extends GetData {
+class PrintOnPage extends GetData {
 	constructor() {
 		super();
 		this.listContainer = document.querySelector(".employees-container");
@@ -31,14 +31,14 @@ class PrintToPage extends GetData {
 		this.createsParagraph = this.createsParagraph.bind(this);
 		this.addCreatedElementsToList = this.addCreatedElementsToList.bind(this);
 		this.detailsButtonModifier = this.detailsButtonModifier.bind(this);
-		this.clickedButton = this.employeeList.addEventListener("click", this.detailsButtonModifier);
+		this.employeeList.addEventListener("click", this.detailsButtonModifier);
 	}
 
 	detailsButtonModifier(event) {
-		console.log(this.arrOfEmployee);
 		if (event.target.classList.contains(this.detailsButtonClass)) {
 			event.target.closest(".employees-container__list-element").classList.toggle("employees-container__list-element--active");
 		}
+		return event.target;
 	}
 
 	async getEmployeeByName() {
@@ -48,7 +48,7 @@ class PrintToPage extends GetData {
 			this.addCreatedElementsToList(this.createsParagraph(this.emptyFile), undefined);
 		} else {
 			this.arrOfEmployee.forEach(employee => {
-				const name = employee.employee_name;
+				const name = employee.name;
 				if (name.toLowerCase().includes(this.searchName.toLowerCase())) {
 					this.addCreatedElementsToList(this.createsParagraph(name), this.createsButtonDetails());
 				}
@@ -99,7 +99,7 @@ class PrintToPage extends GetData {
 	}
 }
 
-class Remover extends PrintToPage {
+class Remover extends PrintOnPage {
 	constructor() {
 		super();
 		this.clearPage();
@@ -117,7 +117,7 @@ function getAllData() {
 }
 
 function getDataByName() {
-	const newSearch = new PrintToPage();
+	const newSearch = new PrintOnPage();
 	newSearch.getEmployeeByName();
 }
 
