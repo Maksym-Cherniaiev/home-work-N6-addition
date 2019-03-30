@@ -93,10 +93,6 @@ class PrintOnPage extends GetData {
 		this.employeeList.appendChild(resultList);
 		return this.employeeList;
 	}
-
-	createListElement(employee) {
-		this.employeeList.appendChild(this.createsListItem(employee));
-	}
 }
 
 class Remover extends PrintOnPage {
