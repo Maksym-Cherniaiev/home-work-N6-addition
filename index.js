@@ -1,6 +1,7 @@
-document.getElementById("get-full-data").addEventListener("click", getAllData);
+document.getElementById("get-full-data").addEventListener("click", getDataByName);
 document.getElementById("get-one-employee").addEventListener("click", getDataByName);
-document.getElementById("clear-list").addEventListener("click", removeDataFromList);
+document.getElementById("clear-list").addEventListener("click", getDataByName);
+
 
 let idCounter = 0;
 let buttonId = "btn-id_";
@@ -8,66 +9,39 @@ let buttonId = "btn-id_";
 class GetData {
 	constructor() {
 		this.URL_SERVER = "https://jsonplaceholder.typicode.com/users";
-		this.arrOfEmployee = [];
 	}
 
-	async employeeData() {
-		const response = await fetch(this.URL_SERVER);
+	async employeeData(url) {
+		const response = await fetch(url);
 		this.data = await response.json();
-		this.arrOfEmployee = this.data;
-		return this.arrOfEmployee;
+		return this.data;
 	}
 }
 
-class PrintOnPage extends GetData {
+class Render extends GetData {
 	constructor() {
 		super();
 		this.listContainer = document.querySelector(".employees-container");
 		this.searchName = document.querySelector(".search-employee__input").value;
 		this.employeeList = document.querySelector(".employees-container__list");
-		this.detailsButtonClass = "list__button";
-		this.employeeName = "list__employee-name";
-		this.emptyFile = "Employee not found";
-		this.createsParagraph = this.createsParagraph.bind(this);
-		this.addCreatedElementsToList = this.addCreatedElementsToList.bind(this);
-		this.detailsButtonModifier = this.detailsButtonModifier.bind(this);
-		this.employeeList.addEventListener("click", this.detailsButtonModifier);
+		this.listElementHeightModifier = this.listElementHeightModifier.bind(this);
+		this.employeeList.addEventListener("click", this.listElementHeightModifier);
 	}
 
-	detailsButtonModifier(event) {
+	listElementHeightModifier(event) {
+		console.log(this.employeeList.firstChild);
 		if (event.target.classList.contains(this.detailsButtonClass)) {
-			event.target.closest(".employees-container__list-element").classList.toggle("employees-container__list-element--active");
+			event.target.closest(`.${this.listElement}`).classList.toggle(this.listElementModifier);
 		}
 		return event.target;
 	}
 
-	async getEmployeeByName() {
-		await this.employeeData();
-		console.log(this.arrOfEmployee);
-		if (this.searchName === "") {
-			this.addCreatedElementsToList(this.createsParagraph(this.emptyFile), undefined);
-		} else {
-			this.arrOfEmployee.forEach(employee => {
-				const name = employee.name;
-				if (name.toLowerCase().includes(this.searchName.toLowerCase())) {
-					this.addCreatedElementsToList(this.createsParagraph(name), this.createsButtonDetails());
-				}
-			});
-		}
-		return this.arrOfEmployee;
-	}
-
-	createsListItem() {
-		const employeeElement = document.createElement("li");
-		employeeElement.classList.add("employees-container__list-element");
-		return employeeElement;
-	}
-
-	createsParagraph(employee) {
-		const employeeName = document.createElement("p");
-		employeeName.classList.add(this.employeeName);
-		employeeName.textContent = employee;
-		return employeeName;
+	createDOMElement(tag, elementClass, id, text) {
+		const element = document.createElement(tag);
+		element.classList.add(elementClass);
+		if (id) { element.id = `${this.createId(id)}` }
+		if (text) { element.textContent = text }
+		return element;
 	}
 
 	createId(elem) {
@@ -75,27 +49,54 @@ class PrintOnPage extends GetData {
 		return elem + idCounter;
 	}
 
-	createsButtonDetails() {
-		const employeeDetails = document.createElement("button");
-		employeeDetails.textContent = "details";
-		employeeDetails.classList.add(this.detailsButtonClass);
-		employeeDetails.id = `${this.createId(buttonId)}`
-		return employeeDetails;
-	}
-
-	addCreatedElementsToList(paragraph, button) {
-		const resultList = this.createsListItem();
-		if (paragraph !== undefined) {
-			resultList.appendChild(paragraph);
-		} if (button !== undefined) {
-			resultList.appendChild(button);
-		}
-		this.employeeList.appendChild(resultList);
-		return this.employeeList;
+	addCreatedElementsToList(block, ...elements) {
+		elements.forEach(element => block.appendChild(element));
+		return block;
 	}
 }
 
-class Remover extends PrintOnPage {
+class Filter extends Render {
+	constructor() {
+		super();
+		this.listElement = "employees-container__list-element";
+		this.listElementModifier = "employees-container__list-element--active";
+		this.detailsButtonClass = "list__button";
+		this.employeeName = "list__employee-name";
+		this.emptyFile = "Employee not found";
+	}
+
+	async getAllEmployee() {
+		await this.employeeData(this.URL_SERVER);
+		this.data.forEach(employee => {
+			this.addCreatedElementsToList(this.employeeList, this.addCreatedElementsToList(
+				this.createDOMElement("li", this.listElement),
+				this.createDOMElement("p", this.employeeName, undefined, employee.name),
+				this.createDOMElement("button", this.detailsButtonClass, buttonId, "details")));
+		});
+		return this.employeeList;
+	}
+
+	async getEmployeeByName() {
+		await this.employeeData(this.URL_SERVER);
+		if (this.searchName === "") {
+			this.addCreatedElementsToList(this.employeeList, this.addCreatedElementsToList(
+				this.createDOMElement("li", this.listElement), 
+				this.createDOMElement("p", this.employeeName, undefined, this.emptyFile)));
+		} else {
+			this.data.forEach(employee => {
+				if (employee.name.toLowerCase().includes(this.searchName.toLowerCase())) {
+					this.addCreatedElementsToList(this.employeeList, this.addCreatedElementsToList(
+						this.createDOMElement("li", this.listElement),
+						this.createDOMElement("p", this.employeeName, undefined, employee.name),
+						this.createDOMElement("button", this.detailsButtonClass, buttonId, "details")));
+				}
+			});
+		}
+		return this.data;
+	}
+}
+
+class Remover extends Render {
 	constructor() {
 		super();
 		this.clearPage();
@@ -108,15 +109,13 @@ class Remover extends PrintOnPage {
 	}
 }
 
-function getAllData() {
-
-}
-
-function getDataByName() {
-	const newSearch = new PrintOnPage();
-	newSearch.getEmployeeByName();
-}
-
-function removeDataFromList() {
-	new Remover();
+function getDataByName(event) {
+	const newSearch = new Filter();
+	if (event.target.classList.contains("search-employee__button")) {
+		newSearch.getEmployeeByName(event);
+	} else if (event.target.classList.contains("properties-container__load-list")) {
+		newSearch.getAllEmployee();
+	} else {
+		new Remover();
+	}
 }
